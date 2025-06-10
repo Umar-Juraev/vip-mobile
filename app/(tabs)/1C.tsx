@@ -126,28 +126,30 @@ const ScannerTracking: React.FC = () => {
         { data },
         {
           onSuccess: async (data) => {
-            alert(`"generateOnceMutation", ${JSON.stringify(data)}`);
-            await sendZpl(data?.ZplFile)
-              .then(() => {
-                setShowDialog(false);
-                alert("zpl then");
-              })
-              .catch((err) => {
-                alert(`"zpl catch", ${err.message}`);
+            alert(`"generateOnceMutation", ${data.ZplFile}, ${data.ПричинаОшибки}, ${data.Результат}`);
+            setShowDialog(false);
 
-                alert(
-                  `ZPL yuborishda xatolik yuz berdi! Printer sozlamalarini tekshirib qayta urinib ko'ring: ${err.message}`
-                );
-              });
+            // await sendZpl(data?.ZplFile)
+            //   .then(() => {
+            //     setShowDialog(false);
+            //     alert("zpl then");
+            //   })
+            //   .catch((err) => {
+            //     alert(`"zpl catch", ${err.message}`);
+
+            //     alert(
+            //       `ZPL yuborishda xatolik yuz berdi! Printer sozlamalarini tekshirib qayta urinib ko'ring: ${err.message}`
+            //     );
+            //   });
           },
           onError: (err) => {
-            handleFocusInput();
+            // handleFocusInput();
             alert(err.message);
           },
         }
       )
       .finally(() => {
-        handleFocusInput();
+        // handleFocusInput();
       });
   };
 
