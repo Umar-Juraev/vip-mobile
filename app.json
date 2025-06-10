@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "V.I.P Scanner",
-    "slug": "vip-scanner",
+    "slug": "vip-mobile",
     "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo-adab.png",
@@ -46,8 +46,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "20d92038-662d-4c5e-afbe-0467f5264194"
+        "projectId": "65985cb4-0771-4c3e-9921-5c57a3845bdf"
       }
-    }
+    },
+    "owner": "umar_djoraev"
   }
 }
