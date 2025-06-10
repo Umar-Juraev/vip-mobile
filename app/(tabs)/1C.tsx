@@ -85,13 +85,7 @@ const ScannerTracking: React.FC = () => {
     return () => clearTimeout(timer);
   }, [inputValue]);
 
-  useEffect(() => {
-    console.log(error, 888);
-  }, [error]);
-
   const handleSubmit = () => {
-    // Validate required fields
-
     if (
       !boxNoOrTracking ||
       !dimX ||
@@ -126,30 +120,21 @@ const ScannerTracking: React.FC = () => {
         { data },
         {
           onSuccess: async (data) => {
-            alert(`"generateOnceMutation", ${data.ZplFile}, ${data.ПричинаОшибки}, ${data.Результат}`);
-            setShowDialog(false);
-
-            // await sendZpl(data?.ZplFile)
-            //   .then(() => {
-            //     setShowDialog(false);
-            //     alert("zpl then");
-            //   })
-            //   .catch((err) => {
-            //     alert(`"zpl catch", ${err.message}`);
-
-            //     alert(
-            //       `ZPL yuborishda xatolik yuz berdi! Printer sozlamalarini tekshirib qayta urinib ko'ring: ${err.message}`
-            //     );
-            //   });
+            await sendZpl(data?.ZplFile)
+              .then(() => {
+                setShowDialog(false);
+              })
+              .catch((err) => {
+              });
           },
           onError: (err) => {
-            // handleFocusInput();
+            handleFocusInput();
             alert(err.message);
           },
         }
       )
       .finally(() => {
-        // handleFocusInput();
+        handleFocusInput();
       });
   };
 

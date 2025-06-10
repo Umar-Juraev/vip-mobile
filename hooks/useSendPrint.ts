@@ -24,14 +24,11 @@ export const useSendPrint = () => {
           client.write(zpl);
           client.destroy();
           setIsLoading(false);
-          alert(`{"zpl", ${zpl}}`);
-          alert("ZPL successfully sent");
           resolve("ZPL successfully sent");
         }
       );
 
       client.on("error", (error) => {
-        alert(`{"error:", :${error.message}}`);
         setIsLoading(false);
         setError(error.message);
         alert(`Connection failed: ${error.message}`);
