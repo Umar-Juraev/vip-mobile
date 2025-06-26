@@ -6,6 +6,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context"; // Import thi
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "../i18n/i18n";
+import Header from "@/components/layout/Header";
+import { GlobalProvider } from "./ContextProvider";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -18,14 +20,17 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <GlobalProvider>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <Header />
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </GlobalProvider>
   );
 }

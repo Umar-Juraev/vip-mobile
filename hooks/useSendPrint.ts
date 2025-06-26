@@ -13,31 +13,36 @@ export const useSendPrint = () => {
     const printInfo = await getPrinterInfo();
 
     return new Promise((resolve, reject) => {
-      alert(`{"printInfo", ${JSON.stringify(printInfo)}}`);
-
       const client = TcpSocket.createConnection(
         {
           port: printInfo.port,
           host: printInfo.host,
         },
         () => {
-          client.write(zpl);
-          client.destroy();
-          setIsLoading(false);
-          resolve("ZPL successfully sent");
+          client.write(zpl, undefined, (err: any) => {
+            if (err) {
+              setIsLoading(false);
+              setError(`Yozishda xatolik: ${err?.message}`);
+              reject(`Yozishda xatolik: ${err?.message}`);
+            } else {
+              client.end();
+              setIsLoading(false);
+              resolve("ZPL muvaffaqiyatli yuborildi");
+            }
+          });
         }
       );
 
       client.on("error", (error) => {
         setIsLoading(false);
-        setError(error.message);
-        alert(`Connection failed: ${error.message}`);
-        reject(`Connection failed: ${error.message}`);
+        setError(`Ulanishda xatolik: ${error.message}`);
+        reject(`Ulanishda xatolik: ${error.message}`);
       });
 
       client.on("close", () => {
         setIsLoading(false);
-        alert("close connection");
+        setError("Ulanish kutilmaganda yopildi");
+        reject(null);
       });
     });
   }, []);

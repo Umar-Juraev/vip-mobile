@@ -91,21 +91,14 @@ export const boxService = {
   getBoxById: (boxNo: string): Promise<AxiosResponse<BoxDTO>> =>
     api.get(`/vip/box/details/${boxNo}`),
 
-  assignTracking: ({
-    boxId,
-    trackingNumber,
-    unassign = false,
-  }: BoxAssignTrackingParams): Promise<void> =>
-    api.patch(`/vip/box/${boxId}/assign-tracking`, {
-      trackingNumber,
-      unassign,
-    }),
+  assignTracking: ({ boxId, trackingNumber, unassign }: BoxAssignTrackingParams): Promise<void> =>
+    api.patch(`/vip/box/${boxId}/assign-tracking`, { trackingNumber, unassign }),
 
   activateBox: (boxId: string): Promise<void> =>
     api.patch(`/vip/box/${boxId}/activate`),
 
-  generateOnce: (data:BoxDetailDTO): Promise<AxiosResponse<OneCDTO>> =>
-    api.post(`/vip/box/generate-box/`,data),
+  generateOnce: (data: BoxDetailDTO): Promise<AxiosResponse<OneCDTO>> =>
+    api.post(`/vip/box/generate-box/`, data),
 
   getBoxOrTracking: (boxNo: string): Promise<AxiosResponse<BoxDetailDTO>> =>
     api.get(`/vip/box/details/${boxNo}`),

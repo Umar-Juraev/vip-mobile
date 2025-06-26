@@ -23,15 +23,15 @@ import { useBox, useBoxAssignTracking, useBoxFinished } from "@/hooks/useApi";
 import { Nullable } from "@/types/common";
 import { BoxDTO, TrackingDTO } from "@/types/data";
 import {
-  getIsLocalTrackingScannerVisible,
   getLocalBox,
   ILocalBox,
   removeLocalBox,
-  setIsLocalTrackingScannerVisible,
   setLocalBox,
 } from "@/utils/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import Header from "@/components/layout/Header";
+import { useGlobalContext } from "../ContextProvider";
 // import successSound from '../../assets/sounds/success.mp3';
 // import errorSound from '../../assets/sounds/error.mp3';
 // Main Component
@@ -45,6 +45,7 @@ const Scanner: React.FC = () => {
     useState(false);
   const [statelocalBox, setStateLocalBox] = useState<Nullable<ILocalBox>>(null);
   const [box, setBox] = useState<Nullable<BoxDTO>>(null);
+  const { isLocalTrackingScannerVisible, setIsLocalTrackingScannerVisible } = useGlobalContext()
 
   const [scannedItems, setScannedItems] = useState<TrackingDTO[]>([]);
   const { t } = useTranslation();
@@ -57,7 +58,6 @@ const Scanner: React.FC = () => {
     if (!statelocalBox?.boxId) return;
     endScanning.mutate(statelocalBox.boxId);
     setShowDialog(false);
-    setIsTrackingScannerVisible(false);
     setShowStartModal(false);
     handleClear();
   };
@@ -66,16 +66,12 @@ const Scanner: React.FC = () => {
     setShowDialog(true);
   };
 
-  const handleDeleteItem = async ({
-    id,
-    trackingNumber,
-    boxId,
-  }: TrackingDTO) => {
-    if (!boxId || !trackingNumber) return;
+  const handleDeleteItem = async ({ trackingNumber, boxId }: TrackingDTO) => {
+    if (!boxId || !trackingNumber) return alert("O'chirish uchun barcha ma'lumotlar kerak.");
     await boxAssignTracking.mutateAsync({
       boxId: boxId,
       trackingNumber,
-      unassign: !!boxId,
+      unassign: true,
     });
     getData();
   };
@@ -109,13 +105,7 @@ const Scanner: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      const isLocalTrackingScannerVisible =
-        await getIsLocalTrackingScannerVisible();
-      setIsLocalTrackingScannerVisible(
-        isTrackingScannerVisible || isLocalTrackingScannerVisible
-      );
-    })();
+    setIsLocalTrackingScannerVisible(isTrackingScannerVisible)
   }, [isTrackingScannerVisible]);
 
   const getData = () => {
@@ -153,6 +143,8 @@ const Scanner: React.FC = () => {
     setScannerValue("");
     setStateLocalBox(null);
     removeLocalBox();
+    setIsLocalTrackingScannerVisible(false)
+    setIsTrackingScannerVisible(false)
   }
 
   const renderItem: ListRenderItem<TrackingDTO> = ({ item, index }) => (
@@ -516,25 +508,25 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   itemNumber: {
-    flex: 0.5,
-    fontSize: 16,
+    flex: 0.3,
+    fontSize: 15,
     color: "#333",
   },
   itemCode: {
     flex: 2,
-    fontSize: 16,
+    fontSize: 15,
     color: "#2196f3",
     fontWeight: "500",
   },
   itemWeight: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     color: "#333",
     textAlign: "right",
   },
   deleteButton: {
     marginLeft: 12,
-    padding: 8,
+    padding: 5,
   },
   emptyState: {
     flex: 1,

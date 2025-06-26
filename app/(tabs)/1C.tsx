@@ -1,20 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Image, Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { useBoxOrTracking, useGenerateOnce } from "@/hooks/useApi";
 import { useFocusEffect } from "@react-navigation/native";
@@ -24,8 +10,7 @@ import { useSendPrint } from "@/hooks/useSendPrint";
 import { BoxDetailDTO } from "@/types/data";
 import { calculateCubicMeterFromCm } from "@/utils/helpers";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import TcpSocket from "react-native-tcp-socket";
-
+import Header from "@/components/layout/Header";
 // import { useSendPrint } from "@/hooks/useSendPrint";
 
 const ScannerTracking: React.FC = () => {
@@ -34,16 +19,16 @@ const ScannerTracking: React.FC = () => {
   const [scannerValue, setScannerValue] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [boxNoOrTracking, setBoxNoOrTracking] = useState("");
-  const [dimX, setDimX] = useState("");
-  const [dimY, setDimY] = useState("");
-  const [dimZ, setDimZ] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [dimX, setDimX] = useState("50");
+  const [dimY, setDimY] = useState("70");
+  const [dimZ, setDimZ] = useState("80");
+  const [quantity, setQuantity] = useState("1");
   const [weight, setWeight] = useState("");
   const [volume, setVolume] = useState("");
   const { t } = useTranslation();
   const generateOnceMutation = useGenerateOnce();
 
-  const { sendZpl, isLoading, error } = useSendPrint();
+  const { sendZpl } = useSendPrint();
   const { refetch, isFetching } = useBoxOrTracking(scannerValue);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,7 +37,7 @@ const ScannerTracking: React.FC = () => {
     React.useCallback(() => {
       const timer = setTimeout(() => inputRef.current?.focus(), 100);
       return () => clearTimeout(timer);
-    }, [scannerValue])
+    }, [scannerValue, showDialog, modalVisible])
   );
 
   useEffect(() => {
@@ -106,6 +91,10 @@ const ScannerTracking: React.FC = () => {
       alert("Diqqat! Barcha maydonlarni to'g'ri to'ldiring!");
       return;
     }
+    if (Number(volume) < 0.001) {
+      alert("Diqqat! O'lcham (volume) 0.001 dan kichik bo'lmasligi kerak!");
+      return;
+    }
 
     const data: BoxDetailDTO = {
       boxNo: boxNoOrTracking,
@@ -117,86 +106,32 @@ const ScannerTracking: React.FC = () => {
       waybillCount: Number(quantity),
     };
 
-    const zpl = `
-    ^XA
+    generateOnceMutation
+      .mutateAsync(
+        { data },
+        {
+          onSuccess: async (data) => {
+            await sendZpl(data?.ZplFile)
+              .then(() => {
+                alert("ZPL fayli muvaffaqiyatli yuborildi!");
+                setShowDialog(false);
+                handleFocusInput()
+              })
+              .catch((error) => {
+                alert(error);
+              });
+          },
+          onError: (err) => {
+            handleFocusInput();
+            console.log(err);
 
-^FX Top section with logo, name and address.
-^CF0,60
-^FO50,50^GB100,100,100^FS
-^FO75,75^FR^GB100,100,100^FS
-^FO93,93^GB40,40,40^FS
-^FO220,50^FDIntershipping, Inc.^FS
-^CF0,30
-^FO220,115^FD1000 Shipping Lane^FS
-^FO220,155^FDShelbyville TN 38102^FS
-^FO220,195^FDUnited States (USA)^FS
-^FO50,250^GB700,3,3^FS
-
-^FX Second section with recipient address and permit information.
-^CFA,30
-^FO50,300^FDJohn Doe^FS
-^FO50,340^FD100 Main Street^FS
-^FO50,380^FDSpringfield TN 39021^FS
-^FO50,420^FDUnited States (USA)^FS
-^CFA,15
-^FO600,300^GB150,150,3^FS
-^FO638,340^FDPermit^FS
-^FO638,390^FD123456^FS
-^FO50,500^GB700,3,3^FS
-
-^FX Third section with bar code.
-^BY5,2,270
-^FO100,550^BC^FD12345678^FS
-
-^FX Fourth section (the two boxes on the bottom).
-^FO50,900^GB700,250,3^FS
-^FO400,900^GB3,250,3^FS
-^CF0,40
-^FO100,960^FDCtr. X34B-1^FS
-^FO100,1010^FDREF1 F00B47^FS
-^FO100,1060^FDREF2 BL4H8^FS
-^CF0,190
-^FO470,955^FDCA^FS
-
-^XZ
-    `;
-
-    const client = TcpSocket.createConnection(
-      {
-        port: 9100,
-        host: "192.168.68.0",
-      },
-      () => {
-        client.write(zpl);
-        client.destroy();
-      }
-    );
-
-    client.on("error", (error) => {
-      alert(`Connection failed: ${error.message}`);
-    });
-
-    // generateOnceMutation
-    //   .mutateAsync(
-    //     { data },
-    //     {
-    //       onSuccess: async (data) => {
-    //         await sendZpl(data?.ZplFile)
-    //           .then(() => {
-    //             setShowDialog(false);
-    //           })
-    //           .catch((err) => {
-    //           });
-    //       },
-    //       onError: (err) => {
-    //         handleFocusInput();
-    //         alert(err.message);
-    //       },
-    //     }
-    //   )
-    //   .finally(() => {
-    //     handleFocusInput();
-    //   });
+            alert(err.message);
+          },
+        }
+      )
+      .finally(() => {
+        handleFocusInput();
+      });
   };
 
   useEffect(() => {
@@ -226,7 +161,7 @@ const ScannerTracking: React.FC = () => {
   };
 
   const handleFocusInput = () => {
-    inputRef.current?.focus();
+    setTimeout(() => inputRef.current?.focus(), 100);
   };
 
   function handleClear() {
@@ -236,17 +171,10 @@ const ScannerTracking: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* <StatusBar barStyle="dark-content" backgroundColor="#fff" /> */}
       <View style={styles.wrapper}>
         <View style={styles.content}>
           <HostPortModal visible={modalVisible} onClose={onCloseModal} />
-          {isLoading || error ? (
-            <MaterialCommunityIcons
-              size={120}
-              name="printer-wireless"
-              color={"#0a7ea4"}
-            />
-          ) : generateOnceMutation.isPending || isFetching ? (
+          {generateOnceMutation.isPending || isFetching ? (
             <ActivityIndicator size="large" />
           ) : (
             <>
@@ -286,7 +214,7 @@ const ScannerTracking: React.FC = () => {
         }}
       >
         {generateOnceMutation.isPending ? (
-          <div
+          <View
             style={{
               flex: 1,
               height: "100%",
@@ -296,7 +224,7 @@ const ScannerTracking: React.FC = () => {
             }}
           >
             <ActivityIndicator size="large" />
-          </div>
+          </View>
         ) : (
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -343,7 +271,7 @@ const ScannerTracking: React.FC = () => {
                       returnKeyType="done"
                       onSubmitEditing={Keyboard.dismiss}
                       inputMode="decimal"
-                      min={0.01}
+                      min={0.001}
                       required
                     />
                     <TextInput
@@ -357,7 +285,7 @@ const ScannerTracking: React.FC = () => {
                       returnKeyType="done"
                       onSubmitEditing={Keyboard.dismiss}
                       inputMode="decimal"
-                      min={0.01}
+                      min={0.001}
                       required
                     />
                     <TextInput
@@ -371,7 +299,7 @@ const ScannerTracking: React.FC = () => {
                       returnKeyType="done"
                       onSubmitEditing={Keyboard.dismiss}
                       inputMode="decimal"
-                      min={0.01}
+                      min={0.001}
                       required
                     />
                   </View>
@@ -387,6 +315,7 @@ const ScannerTracking: React.FC = () => {
                       onSubmitEditing={Keyboard.dismiss}
                       inputMode="decimal"
                       min={1}
+                      editable={quantity ? false : true}
                       required
                     />
                   </View>
@@ -403,7 +332,7 @@ const ScannerTracking: React.FC = () => {
                       returnKeyType="done"
                       onSubmitEditing={Keyboard.dismiss}
                       inputMode="decimal"
-                      min={0.01}
+                      min={0.001}
                       required
                     />
                     <Text style={styled1CDialog.unitText}>kg</Text>
@@ -422,7 +351,8 @@ const ScannerTracking: React.FC = () => {
                       // returnKeyType="done"
                       inputMode="decimal"
                       onSubmitEditing={Keyboard.dismiss}
-                      // editable={false}
+                      editable={false}
+                      min={0.001}
                       required
                     />
                     <Text style={styled1CDialog.unitText}>m³</Text>
@@ -498,6 +428,7 @@ const styled1CDialog = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
     alignItems: "center",
+    gap: 8
   },
   dimensionInput: {
     flex: 1,
@@ -509,7 +440,7 @@ const styled1CDialog = StyleSheet.create({
     backgroundColor: "#fff",
     fontSize: 16,
     color: "#333",
-    marginRight: 10,
+    width: '33.3%'
   },
   unitText: {
     position: "absolute",

@@ -1,11 +1,11 @@
 import CacheKey from "@/constants/cache-key";
 import { InfoDTO, PrinterInfoDTO } from "@/types/data";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Nullable } from './../types/common';
+import { Nullable } from '../types/common';
 
 export interface ILocalBox {
-  boxNo: string;
-  boxId?: number
+    boxNo: string;
+    boxId?: number
 }
 //User info
 export const getLocalUserInfo = async (): Promise<InfoDTO | null> => {
@@ -57,34 +57,6 @@ export const setLocalBox = async (box: ILocalBox): Promise<void> => {
         console.error("Error setting user info:", error);
     }
 };
-// isTrackingScannerVisible
-
-export const setIsLocalTrackingScannerVisible = async (str:boolean): Promise<void> => {
-    try {
-        await AsyncStorage.setItem(CacheKey.TRACKING_SCANNER_VISIBLE, String(str));
-    } catch (error) {
-        console.error("Error setting tracking scanner visible:", error);
-    }
-};
-
-export const removeIsLocalTrackingScannerVisible = async (): Promise<void> => {
-    try {
-        await AsyncStorage.removeItem(CacheKey.TRACKING_SCANNER_VISIBLE);
-    } catch (error) {
-        console.error("Error removing tracking scanner visible:", error);
-    }
-};
-
-export const getIsLocalTrackingScannerVisible = async (): Promise<boolean> => {
-    try {
-        const value = await AsyncStorage.getItem(CacheKey.TRACKING_SCANNER_VISIBLE);
-        return !!value;
-    } catch (error) {
-        console.error("Error getting tracking scanner visible:", error);
-        return false;
-    }
-};
-
 
 export const setPrinterInfo = async (host: string, port: number): Promise<void> => {
     try {

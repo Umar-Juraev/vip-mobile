@@ -6,11 +6,6 @@ import { useEffect } from "react";
 
 export default function HomeScreen() {
   useEffect(() => {
-
-    console.log('====================================');
-    console.log('HomeScreen useEffect');
-    console.log('====================================');
-
     const checkToken = async () => {
       const storedToken = await getLocalUserInfo();
       if (storedToken) {

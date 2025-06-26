@@ -35,7 +35,7 @@
     "deviceSetAsDefault": "qurilmasi asosiy printer sifatida o'rnatildi",
     "scan": "Skanerlash",
     "scanBoxInstruction": "Jarayonni boshlash uchun iltimos avval quti ustiga yopishtirilgan shtrix-kodni skanerlang!",
-    "scan1CInstruction": "Box shtrix-kodni skanerlash orqali yuk hujjat raqam chiqaring!",
+    "scan1CInstruction": "Quti shtrix-kodni skanerlash orqali yuk hujjat raqam chiqaring!",
     "scanBox": "Qutini skanerlash",
     "printSetting": "Printerni sozlash!",
     "scanOtherBox": "Boshqa quti skanerlash",

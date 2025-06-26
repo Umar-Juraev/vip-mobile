@@ -106,7 +106,7 @@ export default function LoginScreen() {
         <View style={styles.loginWrapper}>
           <View style={styles.loginHeader}>
             <Image
-              source={require('../../assets/images/logo.png')}
+              source={require('../../assets/images/logo.svg')}
               style={styles.logo}
               resizeMode="contain"
             />

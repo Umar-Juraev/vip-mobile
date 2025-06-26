@@ -3,13 +3,10 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
+import { useGlobalContext } from "../ContextProvider";
 
 export default function TabLayout() {
-  const [isTab, setIsTab] = useState(false);
-
-  useEffect(() => {
-    // getIsLocalTrackingScannerVisible().then(setIsTab);
-  }, []);
+  const { isLocalTrackingScannerVisible } = useGlobalContext()  
 
   return (
     <Tabs
@@ -24,7 +21,7 @@ export default function TabLayout() {
             ios: { position: "absolute" },
             default: {},
           }),
-          (route.name === "login" || isTab) && { display: "none" },
+          (route.name === "login" || isLocalTrackingScannerVisible) && { display: "none" },
           { height: 100 },
         ],
         tabBarIconStyle: {
