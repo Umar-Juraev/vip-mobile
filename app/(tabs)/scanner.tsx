@@ -67,6 +67,8 @@ const Scanner: React.FC = () => {
   };
 
   const handleDeleteItem = async ({ trackingNumber, boxId }: TrackingDTO) => {
+    console.log('xaxa');
+
     if (!boxId || !trackingNumber) return alert("O'chirish uchun barcha ma'lumotlar kerak.");
     await boxAssignTracking.mutateAsync({
       boxId: boxId,
@@ -112,7 +114,6 @@ const Scanner: React.FC = () => {
     refetch()
       .then(({ data }) => {
         console.log(data);
-
         if (data) {
           setScannedItems(data.waybills);
           setBox(data);

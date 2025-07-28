@@ -91,8 +91,9 @@ export const boxService = {
   getBoxById: (boxNo: string): Promise<AxiosResponse<BoxDTO>> =>
     api.get(`/vip/box/details/${boxNo}`),
 
-  assignTracking: ({ boxId, trackingNumber, unassign }: BoxAssignTrackingParams): Promise<void> =>
-    api.patch(`/vip/box/${boxId}/assign-tracking`, { trackingNumber, unassign }),
+  assignTracking: ({ boxId, trackingNumber, unassign }: BoxAssignTrackingParams): Promise<AxiosResponse<any>> => {
+    return api.patch(`/vip/box/${boxId}/assign-tracking`, { trackingNumber, unassign })
+  },
 
   activateBox: (boxId: string): Promise<void> =>
     api.patch(`/vip/box/${boxId}/activate`),

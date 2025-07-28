@@ -47,11 +47,13 @@ api.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
+
     if (error.response && error.response.status === 401) {
       await removeLocalUserInfo();
-      router.push("/(tabs)/login"); 
+      router.push("/(tabs)/login");
     }
-    return Promise.reject(error);
+
+    return Promise.reject(error.response?.data);
   }
 );
 

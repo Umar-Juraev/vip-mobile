@@ -162,7 +162,7 @@ export const useBox = (boxNo: string): UseQueryResult<BoxDTO, AxiosError> => {
 export const useBoxAssignTracking = (): UseMutationResult<void, AxiosError, BoxAssignTrackingParams> => {
   return useMutation({
     mutationFn: async ({ boxId, trackingNumber, unassign = false }: BoxAssignTrackingParams) => {
-      await boxService.assignTracking({ boxId, trackingNumber, unassign });
+      await boxService.assignTracking({ boxId, trackingNumber, unassign })
     },
   });
 };

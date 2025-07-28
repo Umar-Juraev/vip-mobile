@@ -37,7 +37,7 @@ const ScannerTracking: React.FC = () => {
     React.useCallback(() => {
       const timer = setTimeout(() => inputRef.current?.focus(), 100);
       return () => clearTimeout(timer);
-    }, [scannerValue, showDialog, modalVisible])
+    }, [showDialog, modalVisible])
   );
 
   useEffect(() => {
@@ -45,14 +45,13 @@ const ScannerTracking: React.FC = () => {
     refetch()
       .then(async ({ data }) => {
         if (data) {
-          if (data.trackingNumber || data.boxNo)
-            setBoxNoOrTracking(data.trackingNumber || data.boxNo);
-          if (data.length) setDimZ(String(data.length));
-          if (data.width) setDimX(String(data.width));
-          if (data.height) setDimY(String(data.height));
-          if (data.volume) setVolume(String(data.volume));
-          if (data.waybillCount) setQuantity(String(data.waybillCount));
-          if (data.weight) setWeight(String(data.weight));
+          setBoxNoOrTracking(data.trackingNumber || data.boxNo);
+          setDimZ(String(data.length));
+          setDimX(String(data.width));
+          setDimY(String(data.height));
+          setVolume(String(data.volume ?? 0));
+          setQuantity(String(data.waybillCount));
+          setWeight(String(data.weight));
           setShowDialog(true);
         } else {
           handleClear();
@@ -72,7 +71,7 @@ const ScannerTracking: React.FC = () => {
     return () => clearTimeout(timer);
   }, [inputValue]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (
       !boxNoOrTracking ||
       !dimX ||
@@ -106,32 +105,26 @@ const ScannerTracking: React.FC = () => {
       waybillCount: Number(quantity),
     };
 
-    generateOnceMutation
-      .mutateAsync(
-        { data },
-        {
-          onSuccess: async (data) => {
-            await sendZpl(data?.ZplFile)
-              .then(() => {
-                alert("ZPL fayli muvaffaqiyatli yuborildi!");
-                setShowDialog(false);
-                handleFocusInput()
-              })
-              .catch((error) => {
-                alert(error);
-              });
-          },
-          onError: (err) => {
-            handleFocusInput();
-            console.log(err);
 
-            alert(err.message);
-          },
-        }
-      )
-      .finally(() => {
-        handleFocusInput();
-      });
+    try {
+      const result = await generateOnceMutation.mutateAsync({ data });
+
+      try {
+        await sendZpl(result?.ZplFile);
+      } catch (sendError) {
+        alert("Printerga yuborishda xatolik yuz berdi.");
+        return;
+      }
+
+    } catch (mutationError: any) {
+      alert(mutationError?.message || "Noma'lum xatolik yuz berdi.");
+      return;
+
+    } finally {
+      setShowDialog(false);
+      handleFocusInput();
+      handleClear();
+    }
   };
 
   useEffect(() => {
@@ -151,6 +144,9 @@ const ScannerTracking: React.FC = () => {
         Number(dimX),
         Number(dimY)
       );
+
+      console.log("calculated",calculated);
+      
       setVolume(calculated.toFixed(3));
     }
   }, [dimX, dimY, dimZ]);
@@ -166,7 +162,6 @@ const ScannerTracking: React.FC = () => {
 
   function handleClear() {
     setInputValue("");
-    setScannerValue("");
   }
 
   return (

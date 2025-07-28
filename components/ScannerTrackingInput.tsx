@@ -37,13 +37,9 @@ const ScannerTrackingInput: React.FC<ScanningInputProps> = ({
           onSuccess: () => {
             onChange();
           },
-          onError: (error) => {
-
-            console.log('====================================');
-            console.log(error);
-            console.log('====================================');
-
-            alert("Trek raqam topilmadi yoki biriktirilgan!");
+          onError: (error: any) => {
+            const errorMessage = error?.error?.message || error?.message || "Trek raqam topilmadi yoki biriktirilgan!";
+            alert(errorMessage);
           },
         }
       )

@@ -1,16 +1,18 @@
 {
   "expo": {
     "name": "V.I.P Scanner",
-    "slug": "vip-mobile",
+    "slug": "vip-scanner",
     "version": "1.2.0",
     "orientation": "portrait",
+    "developmentClient": {
+      "silentLaunch": true
+    },
     "icon": "./assets/images/logo-adab.png",
     "scheme": "vipnative",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.ipost.vipscanner"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +25,7 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ],
-      "package": "com.ipost.vipscanner"
+      "package": "com.ipost5.vipscanner"
     },
     "web": {
       "bundler": "metro",
@@ -47,9 +49,8 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "65985cb4-0771-4c3e-9921-5c57a3845bdf"
+        "projectId": "437fc222-ae2d-4976-a6ef-a2bf7655265d"
       }
-    },
-    "owner": "umar_djoraev"
+    }
   }
 }

@@ -1,7 +1,7 @@
 import CacheKey from "@/constants/cache-key";
 import { InfoDTO, PrinterInfoDTO } from "@/types/data";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Nullable } from '../types/common';
+import { Nullable } from './../types/common';
 
 export interface ILocalBox {
     boxNo: string;
